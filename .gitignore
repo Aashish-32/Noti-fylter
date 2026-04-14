@@ -1,0 +1,33 @@
+# Project-wide
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+/.idea/caches
+/.idea/modules.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/deviceManager.xml
+.idea/
+
+# Build outputs
+build/
+app/build/
+
+# Kotlin/Java
+*.iml
+*.class
+
+# Android
+.cxx/
+captures/
+
+# Misc
+*.jfif
+*.svg
+.DS_Store
+Thumbs.db
+
+# Keep specific drawables if needed, but usually we don't ignore XMLs in res/drawable
+# !app/src/main/res/drawable/*.xml
