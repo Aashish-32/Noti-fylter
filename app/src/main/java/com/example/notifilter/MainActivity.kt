@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                 MotionEvent.ACTION_UP -> {
                     timings.add(now - lastActionTime)
                     lastActionTime = now
-                    feedbackHelper.vibrate(longArrayOf(0, 0))
+                    feedbackHelper.cancel()
                 }
             }
             true

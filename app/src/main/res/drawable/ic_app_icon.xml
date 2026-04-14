@@ -5,7 +5,7 @@
     android:viewportWidth="512"
     android:viewportHeight="512">
 
-    <!-- Main Notification Bell -->
+    <!-- Bell Body with Gradient -->
     <path
         android:pathData="M256,100 A90,100 0 0 1 346,200 L346,200 Q346,250 322,280 L190,280 Q166,250 166,200 A90,100 0 0 1 256,100 Z">
         <aapt:attr name="android:fillColor">
@@ -22,12 +22,10 @@
         </aapt:attr>
     </path>
 
-    <!-- Bell Handle -->
+    <!-- Handle/Clapper -->
     <path
         android:pathData="M220,280 L292,280 A10,10 0 0 1 302,290 L302,290 A10,10 0 0 1 292,300 L220,300 A10,10 0 0 1 210,290 L210,290 A10,10 0 0 1 220,280 Z"
         android:fillColor="#4F46E5" />
-
-    <!-- Bell Clapper -->
     <path
         android:pathData="M256,302 A12,18 0 0 1 268,320 A12,18 0 0 1 256,338 A12,18 0 0 1 244,320 A12,18 0 0 1 256,302 Z"
         android:fillColor="#14B8A6" />
@@ -42,7 +40,7 @@
         android:fillColor="#EF4444"
         android:pathData="M350,92 A28,28 0 1 1 350,148 A28,28 0 1 1 350,92 Z" />
 
-    <!-- Number 3 Text Representation -->
+    <!-- Number 3 in Badge -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M344,110 L356,110 L356,113 L349,120 L356,120 L356,134 L344,134 L344,130 L352,130 L352,123 L344,123 Z" />
