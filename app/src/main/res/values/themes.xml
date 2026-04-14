@@ -1,0 +1,35 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Modern Material 3 (M3) Base Theme -->
+    <style name="Theme.NotiFilter" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryContainer">@color/priority_glow</item>
+        <item name="colorOnPrimaryContainer">@color/primary_variant</item>
+
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+
+        <!-- Background & Surface -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+
+        <!-- Refined UI Components -->
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        
+        <!-- Shape & Corners -->
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.RoundedImage" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">12dp</item>
+    </style>
+</resources>

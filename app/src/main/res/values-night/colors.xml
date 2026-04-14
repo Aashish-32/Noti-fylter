@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Semantic Colors (Dark) -->
+    <color name="background">#121212</color>
+    <color name="surface">#1E1E1E</color>
+    <color name="on_surface">#E6E1E5</color>
+    <color name="on_surface_variant">#CAC4D0</color>
+    <color name="stroke_color">#444444</color>
+    <color name="priority_glow">#283593</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="text_tertiary">#888888</color>
+</resources>

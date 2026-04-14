@@ -1,0 +1,20 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color purple_200
+color purple_500
+color purple_700
+color teal_200
+color teal_700
+color white
+id appIcon
+id appName
+id appPackage
+id btnPermission
+id chkPriority
+id recyclerViewApps
+id switchDarkMode
+id title
+layout activity_main
+layout item_app
+style Theme.NotiFilter
