@@ -1,4 +1,4 @@
-package com.example.notifilter
+package com.notifylter.app
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.notifilter.R
 
 class InsightsFragment : Fragment() {
 

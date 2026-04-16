@@ -1,4 +1,4 @@
-package com.example.notifilter
+package com.notifylter.app
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -34,8 +34,9 @@ data class NotificationLog(
 )
 
 class AppPriorityManager(context: Context) {
-    private val prefs: SharedPreferences = context.getSharedPreferences("notifilter_prefs", Context.MODE_PRIVATE)
-    private val historyPrefs: SharedPreferences = context.getSharedPreferences("notifilter_history", Context.MODE_PRIVATE)
+    private val appContext = context.applicationContext
+    private val prefs: SharedPreferences = appContext.getSharedPreferences("notifilter_prefs", Context.MODE_PRIVATE)
+    private val historyPrefs: SharedPreferences = appContext.getSharedPreferences("notifilter_history", Context.MODE_PRIVATE)
     private val gson = Gson()
 
     fun setDarkMode(enabled: Boolean) {
@@ -64,15 +65,16 @@ class AppPriorityManager(context: Context) {
     }
 
     fun getConfig(packageName: String): FeedbackConfig {
-        val json = prefs.getString(packageName, null)
-        return if (json != null) {
-            try {
+        return try {
+            val json = prefs.getString(packageName, null)
+            if (json != null) {
                 gson.fromJson(json, FeedbackConfig::class.java)
-            } catch (e: Exception) {
-                FeedbackConfig()
+            } else {
+                val isHigh = try { prefs.getBoolean(packageName, false) } catch (e: Exception) { false }
+                FeedbackConfig(isEnabled = isHigh)
             }
-        } else {
-            val isHigh = prefs.getBoolean(packageName, false)
+        } catch (e: Exception) {
+            val isHigh = try { prefs.getBoolean(packageName, false) } catch (e: Exception) { false }
             FeedbackConfig(isEnabled = isHigh)
         }
     }

@@ -1,4 +1,4 @@
-package com.example.notifilter
+package com.notifylter.app
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -17,10 +17,13 @@ class NotificationService : NotificationListenerService() {
     private lateinit var feedbackHelper: FeedbackHelper
     private var alarmPlayer: MediaPlayer? = null
 
+    private var hasAlertedForBattery = false
+
     private val batteryReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
             if (action == Intent.ACTION_POWER_DISCONNECTED) {
+                hasAlertedForBattery = false
                 if (appPriorityManager.isAlarmEnabled("anti_theft")) {
                     playAlarm()
                 }
@@ -29,9 +32,12 @@ class NotificationService : NotificationListenerService() {
                 val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
                 val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
                 
-                if (isCharging && level >= 80 && appPriorityManager.isAlarmEnabled("battery_saver")) {
+                if (isCharging && level >= 80 && !hasAlertedForBattery && appPriorityManager.isAlarmEnabled("battery_saver")) {
                     // One-time alert for 80%
                     feedbackHelper.playLowPriorityFeedback()
+                    hasAlertedForBattery = true
+                } else if (level < 80) {
+                    hasAlertedForBattery = false
                 }
             } else if (action == Intent.ACTION_POWER_CONNECTED) {
                 stopAlarm()
@@ -74,6 +80,8 @@ class NotificationService : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        if (sbn.isOngoing) return // Ignore persistent notifications
+
         val packageName = sbn.packageName
         val extras = sbn.notification.extras
         val title = extras.getString("android.title") ?: ""
@@ -100,8 +108,6 @@ class NotificationService : NotificationListenerService() {
         val config = appPriorityManager.getConfig(packageName)
         if (config.isEnabled) {
             feedbackHelper.playFeedback(config)
-        } else {
-            feedbackHelper.playLowPriorityFeedback()
         }
     }
 

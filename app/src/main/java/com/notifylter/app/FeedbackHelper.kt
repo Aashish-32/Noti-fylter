@@ -1,4 +1,4 @@
-package com.example.notifilter
+package com.notifylter.app
 
 import android.content.Context
 import android.hardware.camera2.CameraManager
@@ -76,6 +76,7 @@ class FeedbackHelper(private val context: Context) {
     }
 
     fun vibrate(pattern: LongArray) {
+        if (!vibrator.hasVibrator()) return
         if (pattern.isEmpty() || pattern.all { it == 0L }) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
@@ -86,7 +87,9 @@ class FeedbackHelper(private val context: Context) {
     }
 
     fun cancel() {
-        vibrator.cancel()
+        if (vibrator.hasVibrator()) {
+            vibrator.cancel()
+        }
     }
 
     private fun isWithinSchedule(config: FeedbackConfig): Boolean {
@@ -107,6 +110,7 @@ class FeedbackHelper(private val context: Context) {
     }
 
     fun playLowPriorityFeedback() {
+        if (!vibrator.hasVibrator()) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {

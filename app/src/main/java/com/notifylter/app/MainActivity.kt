@@ -1,4 +1,4 @@
-package com.example.notifilter
+package com.notifylter.app
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -15,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -22,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.example.notifilter.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -66,6 +70,28 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             replaceFragment(AppsFragment())
+        }
+
+        checkBatteryOptimization()
+    }
+
+    private fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+            val packageName = packageName
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Battery Optimization")
+                    .setMessage("To ensure NotiFilter works reliably in the background, please disable battery optimization for this app.")
+                    .setPositiveButton("Settings") { _, _ ->
+                        intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                        intent.data = "package:$packageName".toUri()
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("Later", null)
+                    .show()
+            }
         }
     }
 
