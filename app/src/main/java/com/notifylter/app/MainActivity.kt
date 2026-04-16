@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.example.notifilter.R
+import com.notifylter.app.R
 import java.text.SimpleDateFormat
 import java.util.*
 

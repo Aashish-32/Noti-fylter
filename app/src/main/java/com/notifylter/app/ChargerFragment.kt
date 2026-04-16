@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.example.notifilter.R
+import com.notifylter.app.R
 import java.util.*
 
 class ChargerFragment : Fragment() {
