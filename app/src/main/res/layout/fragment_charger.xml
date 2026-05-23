@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Charger Tester"
+        android:text="@string/charger_tester"
         android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="@color/primary"
@@ -39,7 +39,7 @@
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Detecting..."
+                android:text="@string/charger_detecting"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_secondary"
@@ -72,7 +72,7 @@
                         android:id="@+id/tvCurrent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="--"
+                        android:text="@string/charger_dashes"
                         android:textSize="42sp"
                         android:textStyle="bold"
                         android:textColor="?attr/colorOnSurface" />
@@ -80,7 +80,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="mA"
+                        android:text="@string/charger_unit_ma"
                         android:textSize="14sp"
                         android:textColor="@color/text_tertiary" />
                 </LinearLayout>
@@ -91,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="0.0 V"
+                android:text="@string/charger_voltage_zero"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary" />
@@ -119,7 +119,7 @@
                 android:id="@+id/tvRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PLUG IN CHARGER"
+                android:text="@string/charger_plug_in"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary" />
@@ -146,7 +146,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pro Tip"
+                android:text="@string/charger_pro_tip"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/primary"
@@ -156,7 +156,7 @@
                 android:id="@+id/tvTip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Connect a charger to get analysis."
+                android:text="@string/charger_tip_default"
                 android:textSize="13sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
@@ -167,7 +167,7 @@
         android:id="@+id/switchAntiTheft"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Anti-Theft Alarm"
+        android:text="@string/charger_anti_theft"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface" />
 
@@ -175,7 +175,7 @@
         android:id="@+id/switchBatterySaver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="80% Charge Alert"
+        android:text="@string/charger_battery_alert"
         android:textStyle="bold"
         android:textColor="?attr/colorOnSurface" />
 

@@ -22,6 +22,18 @@ app/build/
 # Android
 .cxx/
 captures/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.hprof
+
+# Gradle / Kotlin daemon caches
+.kotlin/
+out/
+
+# Claude Code local config
+.claude/
 
 # Misc
 *.jfif

@@ -4,18 +4,18 @@
         <item
             android:id="@+id/nav_notifications"
             android:icon="@android:drawable/ic_dialog_email"
-            android:title="Notification Filters" />
+            android:title="@string/nav_notifications" />
         <item
             android:id="@+id/nav_insights"
             android:icon="@android:drawable/ic_menu_sort_by_size"
-            android:title="Notification Insights" />
+            android:title="@string/nav_insights" />
         <item
             android:id="@+id/nav_history"
             android:icon="@android:drawable/ic_menu_recent_history"
-            android:title="Notification History" />
+            android:title="@string/nav_history" />
         <item
             android:id="@+id/nav_charger"
             android:icon="@android:drawable/ic_lock_idle_charging"
-            android:title="Charger Quality Tester" />
+            android:title="@string/nav_charger" />
     </group>
 </menu>

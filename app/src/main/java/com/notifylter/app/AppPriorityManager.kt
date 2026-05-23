@@ -79,25 +79,34 @@ class AppPriorityManager(context: Context) {
         }
     }
 
+    // History is read on the UI thread and written from the binder thread that
+    // delivers notifications — serialize the read-modify-write so entries don't drop.
+    private val historyLock = Any()
+
     fun addLog(log: NotificationLog) {
-        val logs = getLogs().toMutableList()
-        logs.add(0, log)
-        if (logs.size > 100) logs.removeAt(logs.size - 1)
-        val json = gson.toJson(logs)
-        historyPrefs.edit().putString("logs", json).apply()
+        synchronized(historyLock) {
+            val logs = readLogsLocked().toMutableList()
+            logs.add(0, log)
+            if (logs.size > 100) logs.removeAt(logs.size - 1)
+            historyPrefs.edit().putString("logs", gson.toJson(logs)).apply()
+        }
     }
 
-    fun getLogs(): List<NotificationLog> {
+    fun getLogs(): List<NotificationLog> = synchronized(historyLock) { readLogsLocked() }
+
+    private fun readLogsLocked(): List<NotificationLog> {
         val json = historyPrefs.getString("logs", null) ?: return emptyList()
         val type = object : TypeToken<List<NotificationLog>>() {}.type
         return try {
-            gson.fromJson(json, type)
+            gson.fromJson(json, type) ?: emptyList()
         } catch (e: Exception) {
             emptyList()
         }
     }
 
     fun clearLogs() {
-        historyPrefs.edit().clear().apply()
+        synchronized(historyLock) {
+            historyPrefs.edit().clear().apply()
+        }
     }
 }

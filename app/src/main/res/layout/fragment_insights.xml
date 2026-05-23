@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notification Insights"
+        android:text="@string/title_insights"
         android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="@color/primary"
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="See which apps are most active today."
+        android:text="@string/insights_subtitle"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:layout_marginBottom="24dp" />

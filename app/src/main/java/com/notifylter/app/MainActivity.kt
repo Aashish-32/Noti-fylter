@@ -6,8 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import android.view.*
@@ -76,22 +77,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkBatteryOptimization() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent()
-            val packageName = packageName
-            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                AlertDialog.Builder(this)
-                    .setTitle("Battery Optimization")
-                    .setMessage("To ensure NotiFilter works reliably in the background, please disable battery optimization for this app.")
-                    .setPositiveButton("Settings") { _, _ ->
-                        intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                        intent.data = "package:$packageName".toUri()
-                        startActivity(intent)
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            AlertDialog.Builder(this)
+                .setTitle(R.string.battery_optimization_title)
+                .setMessage(R.string.battery_optimization_message)
+                .setPositiveButton(R.string.settings) { _, _ ->
+                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = "package:$packageName".toUri()
                     }
-                    .setNegativeButton("Later", null)
-                    .show()
-            }
+                    startActivity(intent)
+                }
+                .setNegativeButton(R.string.later, null)
+                .show()
         }
     }
 
@@ -126,8 +124,8 @@ class MainActivity : AppCompatActivity() {
         switchSound.isChecked = currentConfig.useSound
         switchSchedule.isChecked = currentConfig.scheduleActive
         layoutSchedule.visibility = if (currentConfig.scheduleActive) View.VISIBLE else View.GONE
-        tvStart.text = String.format("Start: %02d:%02d", currentConfig.scheduleStartHour, currentConfig.scheduleStartMinute)
-        tvEnd.text = String.format("End: %02d:%02d", currentConfig.scheduleEndHour, currentConfig.scheduleEndMinute)
+        tvStart.text = getString(R.string.start_time_format, currentConfig.scheduleStartHour, currentConfig.scheduleStartMinute)
+        tvEnd.text = getString(R.string.end_time_format, currentConfig.scheduleEndHour, currentConfig.scheduleEndMinute)
 
         val patterns = arrayOf("Pulse", "Double Pulse", "Triple Short", "Long", "Heartbeat", "Rapid", "Zig-Zag", "SOS", "Staccato", "Custom")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, patterns)
@@ -163,14 +161,14 @@ class MainActivity : AppCompatActivity() {
         tvStart.setOnClickListener {
             TimePickerDialog(this, { _, h, m -> 
                 currentConfig = currentConfig.copy(scheduleStartHour = h, scheduleStartMinute = m)
-                tvStart.text = String.format("Start: %02d:%02d", h, m)
+                tvStart.text = getString(R.string.start_time_format, h, m)
             }, currentConfig.scheduleStartHour, currentConfig.scheduleStartMinute, true).show()
         }
 
         tvEnd.setOnClickListener {
             TimePickerDialog(this, { _, h, m -> 
                 currentConfig = currentConfig.copy(scheduleEndHour = h, scheduleEndMinute = m)
-                tvEnd.text = String.format("End: %02d:%02d", h, m)
+                tvEnd.text = getString(R.string.end_time_format, h, m)
             }, currentConfig.scheduleEndHour, currentConfig.scheduleEndMinute, true).show()
         }
 
@@ -241,25 +239,41 @@ class MainActivity : AppCompatActivity() {
 
             val btnPermission = view.findViewById<Button>(R.id.btnPermission)
             btnPermission.setOnClickListener {
-                startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                try {
+                    val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    try {
+                        val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                        startActivity(intent)
+                    } catch (e2: Exception) {
+                        try {
+                            val intent = Intent()
+                            intent.setClassName("com.android.settings", "com.android.settings.Settings\$NotificationAppListActivity")
+                            startActivity(intent)
+                        } catch (e3: Exception) {
+                            Toast.makeText(requireContext(), R.string.toast_notification_access_manual, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
 
             val btnAutoSet = view.findViewById<Button>(R.id.btnAutoSet)
             btnAutoSet.setOnClickListener {
-                var count = 0
-                for (item in appList) {
+                val changed = mutableListOf<Int>()
+                appList.forEachIndexed { index, item ->
                     if (!item.config.isEnabled && highPriorityApps.contains(item.packageName)) {
                         val newConfig = item.config.copy(isEnabled = true, vibrationPattern = "Heartbeat")
                         main.appPriorityManager.setConfig(item.packageName, newConfig)
                         item.config = newConfig
-                        count++
+                        changed.add(index)
                     }
                 }
-                if (count > 0) {
-                    adapter.notifyDataSetChanged()
-                    Toast.makeText(context, "Configured $count messaging apps", Toast.LENGTH_SHORT).show()
+                if (changed.isNotEmpty()) {
+                    changed.forEach { adapter.notifyItemChanged(it) }
+                    Toast.makeText(requireContext(), getString(R.string.toast_auto_set_configured, changed.size), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "No new messaging apps to configure", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.toast_auto_set_none, Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -278,22 +292,36 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun loadInstalledApps(main: MainActivity) {
-            val pm = requireContext().packageManager
-            val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
-            appList.clear()
+            val pm = main.applicationContext.packageManager
+            val priorityManager = main.appPriorityManager
+            val uiHandler = Handler(Looper.getMainLooper())
 
-            for (app in packages) {
-                if (pm.getLaunchIntentForPackage(app.packageName) != null) {
-                    val name = app.loadLabel(pm).toString()
-                    val icon = app.loadIcon(pm)
-                    val config = main.appPriorityManager.getConfig(app.packageName)
-                    appList.add(AppItem(name, app.packageName, icon, config))
+            Thread({
+                val loaded = mutableListOf<AppItem>()
+                try {
+                    val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+                    for (app in packages) {
+                        if (pm.getLaunchIntentForPackage(app.packageName) != null) {
+                            val name = app.loadLabel(pm).toString()
+                            val icon = app.loadIcon(pm)
+                            val config = priorityManager.getConfig(app.packageName)
+                            loaded.add(AppItem(name, app.packageName, icon, config))
+                        }
+                    }
+                    loaded.sortBy { it.name.lowercase() }
+                } catch (_: Exception) {
+                    // Best-effort — surface what we managed to gather.
                 }
-            }
 
-            adapter = AppAdapter(appList, main.appPriorityManager) { main.showSettingsDialog(it) }
-            recyclerView.adapter = adapter
-            recyclerView.scheduleLayoutAnimation()
+                uiHandler.post {
+                    if (!isAdded) return@post
+                    appList.clear()
+                    appList.addAll(loaded)
+                    adapter = AppAdapter(appList, priorityManager) { (activity as? MainActivity)?.showSettingsDialog(it) }
+                    recyclerView.adapter = adapter
+                    recyclerView.scheduleLayoutAnimation()
+                }
+            }, "AppsFragment-Load").start()
         }
     }
 

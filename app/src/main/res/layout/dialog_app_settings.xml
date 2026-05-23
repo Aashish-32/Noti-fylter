@@ -13,7 +13,7 @@
             android:id="@+id/dialogTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Custom Feedback"
+            android:text="@string/dialog_custom_feedback"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
@@ -22,13 +22,13 @@
             android:id="@+id/switchEnabled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable Custom Feedback"
+            android:text="@string/enable_custom_feedback"
             android:layout_marginBottom="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vibration Pattern"
+            android:text="@string/vibration_pattern"
             android:layout_marginTop="16dp" />
 
         <Spinner
@@ -41,7 +41,7 @@
             android:id="@+id/btnRecordVibration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Record Custom Vibration"
+            android:text="@string/record_custom_vibration"
             android:layout_marginTop="8dp"
             android:visibility="gone" />
 
@@ -49,20 +49,20 @@
             android:id="@+id/switchFlash"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Camera Flash"
+            android:text="@string/camera_flash"
             android:layout_marginTop="16dp" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchSound"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Notification Sound"
+            android:text="@string/notification_sound"
             android:layout_marginTop="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Schedule (Active Window)"
+            android:text="@string/schedule_active_window"
             android:textStyle="bold"
             android:layout_marginTop="24dp" />
 
@@ -70,7 +70,7 @@
             android:id="@+id/switchSchedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enable Time Schedule"
+            android:text="@string/enable_time_schedule"
             android:layout_marginTop="8dp" />
 
         <LinearLayout
@@ -87,21 +87,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Start: 09:00"
+                android:text="@string/time_start_default"
                 android:padding="8dp"
                 android:background="?android:attr/selectableItemBackground" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" to " />
+                android:text="@string/time_to" />
 
             <TextView
                 android:id="@+id/tvEndTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="End: 17:00"
+                android:text="@string/time_end_default"
                 android:padding="8dp"
                 android:background="?android:attr/selectableItemBackground" />
         </LinearLayout>
@@ -110,7 +110,7 @@
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
+            android:text="@string/save"
             android:layout_marginTop="32dp" />
 
     </LinearLayout>

@@ -9,7 +9,7 @@ import android.media.RingtoneManager
 import android.os.BatteryManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.util.Log
+import androidx.core.content.ContextCompat
 
 class NotificationService : NotificationListenerService() {
 
@@ -55,7 +55,8 @@ class NotificationService : NotificationListenerService() {
             addAction(Intent.ACTION_POWER_CONNECTED)
             addAction(Intent.ACTION_BATTERY_CHANGED)
         }
-        registerReceiver(batteryReceiver, filter)
+        // Protected system broadcasts — NOT_EXPORTED is correct on API 33+.
+        ContextCompat.registerReceiver(this, batteryReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onDestroy() {

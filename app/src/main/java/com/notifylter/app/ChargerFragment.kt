@@ -90,51 +90,31 @@ class ChargerFragment : Fragment() {
         }
         val currentMa = Math.abs(currentNow)
 
-        tvStatus.text = if (isCharging) "CHARGING" else "DISCHARGING"
-        tvCurrent.text = if (currentMa > 0) "$currentMa" else "--"
-        tvVoltage.text = String.format("%.1f V", voltageV)
-        
+        tvStatus.text = getString(if (isCharging) R.string.charger_state_charging else R.string.charger_state_discharging)
+        tvCurrent.text = if (currentMa > 0) currentMa.toString() else getString(R.string.charger_dashes)
+        tvVoltage.text = getString(R.string.charger_voltage_format, voltageV)
+
         val progressPercent = ((currentMa / 3000.0) * 100).toInt().coerceIn(0, 100)
         progressCurrent.setProgress(progressPercent, true)
 
         if (!isCharging) {
-            tvRating.text = "NOT CHARGING"
-            tvRating.setTextColor(0xFF666666.toInt())
-            tvTip.text = "Connect a charger to analyze your hardware quality."
-            progressCurrent.setIndicatorColor(0xFF666666.toInt())
-        } else {
-            when {
-                currentMa >= 1800 -> {
-                    tvRating.text = "ULTRA FAST (Excellent)"
-                    tvRating.setTextColor(0xFF4CAF50.toInt())
-                    tvTip.text = "Tip: This is a high-quality charger and cable. Your phone is charging at maximum speed."
-                    progressCurrent.setIndicatorColor(0xFF4CAF50.toInt())
-                }
-                currentMa >= 1200 -> {
-                    tvRating.text = "FAST CHARGE (Great)"
-                    tvRating.setTextColor(0xFF8BC34A.toInt())
-                    tvTip.text = "Tip: This is a solid connection. It will charge your phone quickly."
-                    progressCurrent.setIndicatorColor(0xFF8BC34A.toInt())
-                }
-                currentMa >= 700 -> {
-                    tvRating.text = "STANDARD (Good)"
-                    tvRating.setTextColor(0xFF2196F3.toInt())
-                    tvTip.text = "Tip: Standard charging speed. Good for overnight use, but slow for quick top-ups."
-                    progressCurrent.setIndicatorColor(0xFF2196F3.toInt())
-                }
-                currentMa >= 300 -> {
-                    tvRating.text = "SLOW (Weak Source)"
-                    tvRating.setTextColor(0xFFFF9800.toInt())
-                    tvTip.text = "Tip: Very slow. Likely a laptop USB or an old power brick. Avoid using the phone while charging."
-                    progressCurrent.setIndicatorColor(0xFFFF9800.toInt())
-                }
-                else -> {
-                    tvRating.text = "POOR (Warning)"
-                    tvRating.setTextColor(0xFFF44336.toInt())
-                    tvTip.text = "Tip: Dangerous or broken cable! Your phone might actually lose battery while plugged in."
-                    progressCurrent.setIndicatorColor(0xFFF44336.toInt())
-                }
-            }
+            applyRating(R.string.charger_rating_not_charging, R.string.charger_tip_not_charging, 0xFF666666.toInt())
+            return
         }
+
+        when {
+            currentMa >= 1800 -> applyRating(R.string.charger_rating_ultra,    R.string.charger_tip_ultra,    0xFF4CAF50.toInt())
+            currentMa >= 1200 -> applyRating(R.string.charger_rating_fast,     R.string.charger_tip_fast,     0xFF8BC34A.toInt())
+            currentMa >= 700  -> applyRating(R.string.charger_rating_standard, R.string.charger_tip_standard, 0xFF2196F3.toInt())
+            currentMa >= 300  -> applyRating(R.string.charger_rating_slow,     R.string.charger_tip_slow,     0xFFFF9800.toInt())
+            else              -> applyRating(R.string.charger_rating_poor,     R.string.charger_tip_poor,     0xFFF44336.toInt())
+        }
+    }
+
+    private fun applyRating(ratingRes: Int, tipRes: Int, color: Int) {
+        tvRating.setText(ratingRes)
+        tvRating.setTextColor(color)
+        tvTip.setText(tipRes)
+        progressCurrent.setIndicatorColor(color)
     }
 }
