@@ -14,7 +14,7 @@ class InsightsFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_insights, container, false)
-        val main = activity as MainActivity
+        val main = requireActivity() as MainActivity
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerViewInsights)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -22,7 +22,7 @@ class InsightsFragment : Fragment() {
         val counts = logs.groupingBy { it.packageName to it.appName }.eachCount()
         val sortedInsights = counts.map { (info, count) ->
             InsightItem(info.second, info.first, count)
-        }.sortedByDescending { it.count }
+        }.sortedWith(compareByDescending<InsightItem> { it.count }.thenBy { it.appName })
 
         recyclerView.adapter = InsightsAdapter(sortedInsights)
         return view

@@ -12,9 +12,7 @@ NotiFilter — an Android app (Kotlin) that intercepts incoming notifications vi
 
 ## Build & run
 
-The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`) is currently **deleted in the working tree** (see `git status`). Before running any wrapper command, either restore those files (`git checkout -- gradlew gradlew.bat gradle/`) or generate them with a system Gradle: `gradle wrapper --gradle-version 8.13`.
-
-Once the wrapper is present:
+The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/` — Gradle 8.13) is present and working. If it ever goes missing, regenerate with a system Gradle: `gradle wrapper --gradle-version 8.13`.
 
 - Debug build: `./gradlew assembleDebug` (APK at `app/build/outputs/apk/debug/`)
 - Release build: `./gradlew assembleRelease`
@@ -22,6 +20,8 @@ Once the wrapper is present:
 - Clean: `./gradlew clean`
 
 There are **no unit or instrumentation tests** in the repo — only `app/src/main/`. Don't invent test commands.
+
+`./gradlew lintDebug` fails on one **intentional** error: `ExpiredTargetSdkVersion` (Play wants ≥33; `targetSdk` is deliberately pinned at 32). Treat that as the expected baseline — any *other* lint error is new.
 
 On Windows use `gradlew.bat` instead of `./gradlew`. Open `E:\NotiFylter` in Android Studio for IDE workflows.
 
@@ -57,11 +57,15 @@ Single-module app, single-process, no DI framework, no Room/Retrofit. State is l
 
 `MainActivity.showSettingsDialog` and `showRecorderDialog` are the per-app config and custom-vibration-recorder dialogs — both Fragments call back into the Activity for these because `FeedbackHelper` is held on the Activity, not per-fragment.
 
-**Feedback engine.** `FeedbackHelper` owns the `Vibrator` (with the API 31+ `VibratorManager` branch) and the camera-flash torch. It exposes a `presetPatterns` map; the dialog's "Custom" option swaps in a `LongArray` recorded from touch-down/up timings on a touch area. Vibrations are issued with `AudioAttributes(USAGE_ALARM)` on API 26+ so they aren't suppressed by the system's notification routing. The `isWithinSchedule` helper handles overnight ranges (start > end) correctly.
+**Feedback engine.** `FeedbackHelper` owns the `Vibrator` (with the API 31+ `VibratorManager` branch) and the camera-flash torch. It exposes a `presetPatterns` map (insertion-ordered) plus `patternNames`, which is the single source of truth for the settings spinner — the pattern keys are persisted in `FeedbackConfig`, so renaming one needs a migration. The dialog's "Custom" option swaps in a `LongArray` recorded from touch-down/up timings on a touch area. Vibrations are issued with `AudioAttributes(USAGE_ALARM)` so they aren't suppressed by the system's notification routing. The `isWithinSchedule` helper handles overnight ranges (start > end) correctly; `playFeedback` is **silent** for disabled apps and for notifications outside the schedule window.
+
+`FeedbackHelper` owns a `HandlerThread` for the flash sequence, so every owner must call `release()` in its teardown (`MainActivity.onDestroy`, `NotificationService.onDestroy`).
 
 ## Gotchas
 
 - The brand name appears as both **NotiFilter** (display, README, theme name `Theme.NotiFilter`) and **NotiFylter** (repo root directory). Code paths use `com.notifylter.app`. Don't "fix" one to match the other without checking — the manifest's `android:label` and `strings.xml` are authoritative for what users see.
-- `NotificationService.onNotificationPosted` early-returns on `sbn.isOngoing` (ignores persistent notifications like media controls) and on notifications from the app's own package — preserve both checks.
+- `NotificationService.onNotificationPosted` early-returns on `sbn.isOngoing` (persistent notifications like media controls), on the app's own package, and on `FLAG_GROUP_SUMMARY` (the summary duplicates its children) — preserve all three, and keep them **before** `addLog` so skipped notifications don't reach history.
+- The manifest declares `<queries>` for the MAIN/LAUNCHER intent. Without it, Android 11+ package visibility silently truncates the app list — don't drop it, and enumerate apps via `queryIntentActivities` rather than `getInstalledApplications`.
+- Pref keys live as `AppPriorityManager.KEY_*` constants; app-wide flags share the config prefs file, so `RESERVED_KEYS` stops a package name from colliding with one.
 - History is hard-capped at 100 entries inside `addLog` (FIFO eviction). If you change persistence, keep the cap or surface it as a setting.
 - `commit 20ffc78` fixed unresolved `R` imports by switching to `com.notifylter.app.R` — keep that exact import when adding new fragments/activities.

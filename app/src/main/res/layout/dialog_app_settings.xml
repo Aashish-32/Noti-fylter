@@ -45,6 +45,23 @@
             android:layout_marginTop="8dp"
             android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/tvVibrationOverlapTip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/vibration_overlap_tip"
+            android:textSize="12sp"
+            android:alpha="0.7"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/btnAppNotificationSettings"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/open_app_notification_settings"
+            android:layout_marginTop="4dp" />
+
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchFlash"
             android:layout_width="match_parent"
