@@ -3,6 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// Release signing credentials live in keystore.properties, which is gitignored.
+// When it is absent (fresh clone, CI without secrets) the release build still
+// assembles — it just comes out unsigned instead of failing to configure.
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+def hasReleaseSigning = keystorePropertiesFile.exists()
+if (hasReleaseSigning) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace 'com.notifylter.app'
     compileSdk 34
@@ -15,11 +25,33 @@ android {
         versionName "1.1"
     }
 
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
+    }
+
+    lint {
+        // ExpiredTargetSdkVersion is a Google Play submission policy, not a
+        // correctness or device-compatibility issue. targetSdk is pinned at 32 on
+        // purpose and sideloaded APKs only require targetSdk >= 23 to install, so
+        // this check would otherwise fail every release build for no real reason.
+        disable 'ExpiredTargetSdkVersion'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

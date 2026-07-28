@@ -35,6 +35,13 @@ out/
 # Claude Code local config
 .claude/
 
+# Release signing — NEVER commit these. Back them up outside the repo instead;
+# losing the keystore means no future update can upgrade an existing install.
+keystore/
+*.jks
+*.keystore
+keystore.properties
+
 # Misc
 *.jfif
 *.svg
